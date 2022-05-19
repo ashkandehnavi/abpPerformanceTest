@@ -29,12 +29,12 @@ public class ProductlongService : ApplicationService
         var watch = Stopwatch.StartNew();
         watch.Start();
 
-        var prods = await repository.GetListAsync();
+        var prods = await repository.GetListAsync(true);
 
         return $"wating time: {watch.ElapsedMilliseconds}ms";
     }
 
-    public async Task<string> CreateAsync(long count)
+    public async Task<string> CreateWithRelationAsync(long count)
     {
         var watch = Stopwatch.StartNew();
         watch.Start();
@@ -50,6 +50,26 @@ public class ProductlongService : ApplicationService
                 {
                     CategoryName = $"category item {i}"
                 }
+            });
+        }
+        await repository.InsertManyAsync(prods, true);
+
+        watch.Stop();
+        return $"wating time: {watch.ElapsedMilliseconds}ms";
+    }
+
+    public async Task<string> CreateNoneRelationAsync(long count)
+    {
+        var watch = Stopwatch.StartNew();
+        watch.Start();
+
+        List<ProductLong> prods = new List<ProductLong>();
+        for (int i = 0; i < count; i++)
+        {
+            prods.Add(new ProductLong
+            {
+                ProductName = $"produc {i}",
+                ProductPrice = new Random().Next(1000, 5000),
             });
         }
         await repository.InsertManyAsync(prods, true);
